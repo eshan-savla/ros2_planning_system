@@ -12,7 +12,8 @@ void Imply::PDDLPrint( std::ostream & s, unsigned indent, const TokenStruct< std
 	tabindent( s, indent + 1 );
 	printParams( 0, s, fstruct, d );
 
-	if ( cond ) cond->PDDLPrint( s, indent + 1, fstruct, d );
+	if ( cond_1 ) cond_1->PDDLPrint( s, indent + 1, fstruct, d );
+	if (cond_2) cond_2->PDDLPrint( s, indent + 1, fstruct, d );
 	else {
 		tabindent( s, indent + 1 );
 		s << "()";
@@ -31,17 +32,17 @@ void Imply::parse( Stringreader & f, TokenStruct< std::string > & ts, Domain & d
 	f.next();
 	f.assert_token( "(" );
 
-	TokenStruct< std::string > fs = f.parseTypedList( true, d.types );
-	params = d.convertTypes( fs.types );
-
-	TokenStruct< std::string > fstruct( ts );
-	fstruct.append( fs );
+	if (f.getChar() != ')' ) {
+		cond_1 = d.createCondition( f );
+		cond_1->parse( f, ts, d );
+	}
+	else ++f.c;
 
 	f.next();
 	f.assert_token( "(" );
 	if ( f.getChar() != ')' ) {
-		cond = d.createCondition( f );
-		cond->parse( f, fstruct, d );
+		cond_2 = d.createCondition( f );
+		cond_2->parse( f, ts, d );
 	}
 	else ++f.c;
 
