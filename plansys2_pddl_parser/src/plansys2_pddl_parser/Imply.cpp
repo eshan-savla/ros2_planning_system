@@ -24,8 +24,8 @@ void Imply::PDDLPrint( std::ostream & s, unsigned indent, const TokenStruct< std
 	s << ")";
 }
 
-plansys2_msgs::msg::Node::SharedPtr Imply::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace ) const {
-    throw UnsupportedConstruct("Imply");
+plansys2_msgs::msg::Node::SharedPtr Imply::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace, const std::map<std::string, std::vector<std::string>> & instances_map ) const {
+	throw UnsupportedConstruct("Imply");
 }
 
 void Imply::parse( Stringreader & f, TokenStruct< std::string > & ts, Domain & d ) {

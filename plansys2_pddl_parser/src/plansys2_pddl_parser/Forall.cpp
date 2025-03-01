@@ -23,8 +23,8 @@ void Forall::PDDLPrint( std::ostream & s, unsigned indent, const TokenStruct< st
 	s << ")";
 }
 
-plansys2_msgs::msg::Node::SharedPtr Forall::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace ) const {
-    throw UnsupportedConstruct("Forall");
+plansys2_msgs::msg::Node::SharedPtr Forall::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace, const std::map<std::string, std::vector<std::string>> & instances_map ) const {
+	throw UnsupportedConstruct("Forall");
 }
 
 void Forall::parse( Stringreader & f, TokenStruct< std::string > & ts, Domain & d ) {
