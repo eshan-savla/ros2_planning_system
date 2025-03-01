@@ -250,7 +250,7 @@ DomainExpert::getDurativeActions()
 }
 
 plansys2_msgs::msg::DurativeAction::SharedPtr
-DomainExpert::getDurativeAction(const std::string & action, const std::vector<std::string> & params)
+DomainExpert::getDurativeAction(const std::string &action, const std::vector<std::string> &params, const std::vector<plansys2_msgs::msg::Param> &instances)
 {
   std::string action_search = action;
   std::transform(
