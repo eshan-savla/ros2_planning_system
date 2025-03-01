@@ -227,6 +227,7 @@ ExecutorNode::getOrderedSubGoals()
   auto goal = problem_client_->getGoal();
   auto local_predicates = problem_client_->getPredicates();
   auto local_functions = problem_client_->getFunctions();
+  auto instances = plansys2::convertVector<plansys2_msgs::msg::Param, plansys2::Instance>(problem_client_->getInstances());
 
   std::vector<plansys2_msgs::msg::Tree> ordered_goals;
   std::vector<uint32_t> unordered_subgoals = parser::pddl::getSubtreeIds(goal);
@@ -246,7 +247,7 @@ ExecutorNode::getOrderedSubGoals()
   for (const auto & plan_item : current_plan_.value().items) {
     std::shared_ptr<plansys2_msgs::msg::DurativeAction> action =
       domain_client_->getDurativeAction(
-      get_action_name(plan_item.action), get_action_params(plan_item.action));
+      get_action_name(plan_item.action), get_action_params(plan_item.action), instances);
     apply(action->at_start_effects, local_predicates, local_functions);
     apply(action->at_end_effects, local_predicates, local_functions);
 
