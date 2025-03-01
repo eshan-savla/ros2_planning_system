@@ -25,7 +25,38 @@ void Imply::PDDLPrint( std::ostream & s, unsigned indent, const TokenStruct< std
 }
 
 plansys2_msgs::msg::Node::SharedPtr Imply::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace, const std::map<std::string, std::vector<std::string>> & instances_map ) const {
-	throw UnsupportedConstruct("Imply");
+		
+	plansys2_msgs::msg::Node::SharedPtr node = std::make_shared<plansys2_msgs::msg::Node>();
+	node->node_type = plansys2_msgs::msg::Node::IMPLY;
+	node->node_id = tree.nodes.size();
+	node->name = name;
+	
+	for (unsigned i = 0; i < params.size(); ++i) {
+		plansys2_msgs::msg::Param param;
+		if (i < replace.size()){
+			if (params[i] >= 0)  // param has a variable value; replace by action-args
+			{
+				param.name = replace[i];
+			}
+		} else {
+			param.name = "?" + std::to_string(params[i]);
+		}
+		param.type = d.types[params[i]]->name;
+		node->parameters.push_back(param);
+	}
+	
+	tree.nodes.push_back(*node);
+
+	if (cond_1){
+		plansys2_msgs::msg::Node::SharedPtr child_1 = cond_1->getTree(tree, d, replace); // Could conditions need instances?
+		tree.nodes[node->node_id].children.push_back(child_1->node_id);
+	}
+
+	if(cond_2){
+		plansys2_msgs::msg::Node::SharedPtr child_2 = cond_2->getTree(tree, d, replace); // Could conditions need instances?
+		tree.nodes[node->node_id].children.push_back(child_2->node_id);
+	}
+	return node;
 }
 
 void Imply::parse( Stringreader & f, TokenStruct< std::string > & ts, Domain & d ) {
