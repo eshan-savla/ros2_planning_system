@@ -8,7 +8,7 @@ void Function::PDDLPrint( std::ostream & s, unsigned indent, const TokenStruct< 
 	if ( returnType >= 0 ) s << " - " << d.types[returnType]->name;
 }
 
-plansys2_msgs::msg::Node::SharedPtr Function::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace ) const {
+plansys2_msgs::msg::Node::SharedPtr Function::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace, const std::map<std::string, std::vector<std::string>> & instances_map ) const {
     throw UnsupportedConstruct("Function");
 }
 

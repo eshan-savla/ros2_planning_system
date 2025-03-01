@@ -328,8 +328,9 @@ ExecutorNode::execute(const std::shared_ptr<GoalHandleExecutePlan> goal_handle)
 
   auto action_map = std::make_shared<std::map<std::string, ActionExecutionInfo>>();
   auto action_timeout_actions = this->get_parameter("action_timeouts.actions").as_string_array();
-
-  for (const auto & plan_item : current_plan_.value().items) {
+  auto instances = plansys2::convertVector<plansys2_msgs::msg::Param, plansys2::Instance>(problem_client_->getInstances());
+  for (const auto &plan_item : current_plan_.value().items)
+  {
     auto index = plan_item.action + ":" + std::to_string(static_cast<int>(plan_item.time * 1000));
 
     (*action_map)[index] = ActionExecutionInfo();
@@ -337,7 +338,7 @@ ExecutorNode::execute(const std::shared_ptr<GoalHandleExecutePlan> goal_handle)
       ActionExecutor::make_shared(plan_item.action, shared_from_this());
     (*action_map)[index].durative_action_info =
       domain_client_->getDurativeAction(
-      get_action_name(plan_item.action), get_action_params(plan_item.action));
+      get_action_name(plan_item.action), get_action_params(plan_item.action), instances);
 
     (*action_map)[index].duration = plan_item.duration;
     std::string action_name = (*action_map)[index].durative_action_info->name;

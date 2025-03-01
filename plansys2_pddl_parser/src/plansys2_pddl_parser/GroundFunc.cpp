@@ -22,15 +22,15 @@ void GroundFunc<int>::PDDLPrint( std::ostream & s, unsigned indent, const TokenS
 }
 
 template <>
-plansys2_msgs::msg::Node::SharedPtr GroundFunc<double>::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace ) const {
-    auto node = TypeGround::getTree(tree, d, replace);
+plansys2_msgs::msg::Node::SharedPtr GroundFunc<double>::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace, const std::map<std::string, std::vector<std::string>> & instances_map ) const {
+    auto node = TypeGround::getTree(tree, d, replace); // Ground should not need instances, so is not passed
     node->value = value;
     return node;
 }
 
 template <>
-plansys2_msgs::msg::Node::SharedPtr GroundFunc<int>::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace ) const {
-    auto node = TypeGround::getTree(tree, d, replace);
+plansys2_msgs::msg::Node::SharedPtr GroundFunc<int>::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace, const std::map<std::string, std::vector<std::string>> & instances_map ) const {
+    auto node = TypeGround::getTree(tree, d, replace); // Ground should not need instances, so is not passed
     node->value = value;
     return node;
 }
