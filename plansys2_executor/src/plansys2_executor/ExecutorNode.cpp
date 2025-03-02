@@ -227,7 +227,8 @@ ExecutorNode::getOrderedSubGoals()
   auto goal = problem_client_->getGoal();
   auto local_predicates = problem_client_->getPredicates();
   auto local_functions = problem_client_->getFunctions();
-  auto instances = plansys2::convertVector<plansys2_msgs::msg::Param, plansys2::Instance>(problem_client_->getInstances());
+  auto instances = plansys2::convertVector<plansys2_msgs::msg::Param, plansys2::Instance>(
+    problem_client_->getInstances());
 
   std::vector<plansys2_msgs::msg::Tree> ordered_goals;
   std::vector<uint32_t> unordered_subgoals = parser::pddl::getSubtreeIds(goal);
@@ -329,9 +330,9 @@ ExecutorNode::execute(const std::shared_ptr<GoalHandleExecutePlan> goal_handle)
 
   auto action_map = std::make_shared<std::map<std::string, ActionExecutionInfo>>();
   auto action_timeout_actions = this->get_parameter("action_timeouts.actions").as_string_array();
-  auto instances = plansys2::convertVector<plansys2_msgs::msg::Param, plansys2::Instance>(problem_client_->getInstances());
-  for (const auto &plan_item : current_plan_.value().items)
-  {
+  auto instances = plansys2::convertVector<plansys2_msgs::msg::Param, plansys2::Instance>(
+    problem_client_->getInstances());
+  for (const auto & plan_item : current_plan_.value().items) {
     auto index = plan_item.action + ":" + std::to_string(static_cast<int>(plan_item.time * 1000));
 
     (*action_map)[index] = ActionExecutionInfo();

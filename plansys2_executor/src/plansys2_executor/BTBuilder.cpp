@@ -787,7 +787,8 @@ std::vector<ActionStamped>
 BTBuilder::get_plan_actions(const plansys2_msgs::msg::Plan & plan)
 {
   std::vector<ActionStamped> ret;
-  auto instances = plansys2::convertVector<plansys2_msgs::msg::Param, plansys2::Instance>(problem_client_->getInstances());
+  auto instances = plansys2::convertVector<plansys2_msgs::msg::Param, plansys2::Instance>(
+    problem_client_->getInstances());
   for (auto & item : plan.items) {
     ActionStamped action_stamped;
 
