@@ -98,7 +98,7 @@ public:
 
   plansys2_msgs::msg::Node::SharedPtr getTree(
     plansys2_msgs::msg::Tree & tree, const Domain & d,
-    const std::vector<std::string> & replace = {}) const override
+    const std::vector<std::string> & replace = {}, const std::map<std::string, std::vector<std::string>> & instances_map = {}) const override
   {
     plansys2_msgs::msg::Node::SharedPtr node = std::make_shared<plansys2_msgs::msg::Node>();
     node->node_type = plansys2_msgs::msg::Node::EXPRESSION;
@@ -106,10 +106,10 @@ public:
     node->node_id = tree.nodes.size();
     tree.nodes.push_back(*node);
 
-    plansys2_msgs::msg::Node::SharedPtr left_child = left->getTree(tree, d, replace);
+    plansys2_msgs::msg::Node::SharedPtr left_child = left->getTree(tree, d, replace, instances_map);
     tree.nodes[node->node_id].children.push_back(left_child->node_id);
 
-    plansys2_msgs::msg::Node::SharedPtr right_child = right->getTree(tree, d, replace);
+    plansys2_msgs::msg::Node::SharedPtr right_child = right->getTree(tree, d, replace, instances_map);
     tree.nodes[node->node_id].children.push_back(right_child->node_id);
 
     return node;

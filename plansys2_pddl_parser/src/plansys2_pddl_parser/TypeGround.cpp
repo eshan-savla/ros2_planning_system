@@ -29,10 +29,8 @@ void TypeGround::PDDLPrint(
   s << " )";
 }
 
-plansys2_msgs::msg::Node::SharedPtr TypeGround::getTree(
-  plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace) const
-{
-  return Ground::getTree(tree, d, replace);
+plansys2_msgs::msg::Node::SharedPtr TypeGround::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace, const std::map<std::string, std::vector<std::string>> & instances_map ) const {
+    return Ground::getTree(tree, d, replace); // Ground should not need instances, so is not passed
 }
 
 void TypeGround::insert(Domain & d, const StringVec & v)
