@@ -45,11 +45,10 @@ plansys2_msgs::msg::Node::SharedPtr Imply::getTree( plansys2_msgs::msg::Tree & t
 	throw UnsupportedConstruct("Imply");
 }
 
-void Imply::parse(Stringreader & f, TokenStruct<std::string> & ts, Domain & d)
-{
-  f.next();
-  f.assert_token("(");
-
+void Imply::parse( Stringreader & f, TokenStruct< std::string > & ts, Domain & d ) {
+	f.next();
+	f.assert_token( "(" );
+	params = d.convertTypes(ts.types);
 	if (f.getChar() != ')' ) {
 		cond_1 = d.createCondition( f );
 		cond_1->parse( f, ts, d );
