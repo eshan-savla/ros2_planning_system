@@ -816,14 +816,14 @@ TEST(problem_expert, forall_imply_test)
     problem_client->getInstances());
   auto action_map = std::make_shared<std::map<std::string, plansys2::ActionExecutionInfo>>();
   (*action_map)["(check_items location1):1"] = plansys2::ActionExecutionInfo();
-  (*action_map)["(check_items location1):1"].durative_action_info =
+  (*action_map)["(check_items location1):1"].action_info =
     domain_client->getDurativeAction(
     plansys2::get_action_name("(check_items location1)"),
     plansys2::get_action_params("(check_items location1)"), instances);
 
   ASSERT_NE(
-    (*action_map)["(check_items location1):1"].durative_action_info,
-    nullptr);
+    (*action_map)["(check_items location1):1"].action_info.action.index(),
+    std::variant_npos);
 
   std::string bt_xml_tree =
     R"(
@@ -862,7 +862,7 @@ TEST(problem_expert, forall_imply_test)
     auto tree = factory.createTreeFromText(bt_xml_tree, blackboard);
 
     auto status = BT::NodeStatus::RUNNING;
-    status = tree.tickRoot();
+    status = tree.tickOnce();
     ASSERT_EQ(status, BT::NodeStatus::SUCCESS);
   } catch (std::exception & e) {
     std::cerr << e.what() << std::endl;
