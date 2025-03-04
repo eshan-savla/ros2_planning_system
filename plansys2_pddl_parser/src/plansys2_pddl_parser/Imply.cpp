@@ -29,8 +29,8 @@ void Imply::PDDLPrint(
   tabindent(s, indent + 1);
   printParams(0, s, fstruct, d);
 
-	if ( cond_1 ) cond_1->PDDLPrint( s, indent + 1, fstruct, d );
-	if (cond_2) cond_2->PDDLPrint( s, indent + 1, fstruct, d );
+	if ( left ) left->PDDLPrint( s, indent + 1, fstruct, d );
+	if (right) right->PDDLPrint( s, indent + 1, fstruct, d );
 	else {
 		tabindent( s, indent + 1 );
 		s << "()";
@@ -64,13 +64,13 @@ plansys2_msgs::msg::Node::SharedPtr Imply::getTree( plansys2_msgs::msg::Tree & t
 	
 	tree.nodes.push_back(*node);
 
-	if (cond_1){
-		plansys2_msgs::msg::Node::SharedPtr child_1 = cond_1->getTree(tree, d, replace); // Could conditions need instances?
+	if (left){
+		plansys2_msgs::msg::Node::SharedPtr child_1 = left->getTree(tree, d, replace); // Could conditions need instances?
 		tree.nodes[node->node_id].children.push_back(child_1->node_id);
 	}
 
-	if(cond_2){
-		plansys2_msgs::msg::Node::SharedPtr child_2 = cond_2->getTree(tree, d, replace); // Could conditions need instances?
+	if(right){
+		plansys2_msgs::msg::Node::SharedPtr child_2 = right->getTree(tree, d, replace); // Could conditions need instances?
 		tree.nodes[node->node_id].children.push_back(child_2->node_id);
 	}
 	return node;
@@ -81,16 +81,16 @@ void Imply::parse( Stringreader & f, TokenStruct< std::string > & ts, Domain & d
 	f.assert_token( "(" );
 	params = d.convertTypes(ts.types);
 	if (f.getChar() != ')' ) {
-		cond_1 = d.createCondition( f );
-		cond_1->parse( f, ts, d );
+		left = d.createCondition( f );
+		left->parse( f, ts, d );
 	}
 	else ++f.c;
 
 	f.next();
 	f.assert_token( "(" );
 	if ( f.getChar() != ')' ) {
-		cond_2 = d.createCondition( f );
-		cond_2->parse( f, ts, d );
+		right = d.createCondition( f );
+		right->parse( f, ts, d );
 	}
 	else ++f.c;
 

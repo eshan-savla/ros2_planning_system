@@ -11,27 +11,27 @@ namespace parser { namespace pddl {
 class Imply : public ParamCond {
 
 public:
-	Condition * cond_1; // The initial condition of imply
-	Condition * cond_2; // The latter condition of imply
+	Condition * left; // The initial condition of imply
+	Condition * right; // The latter condition of imply
 
 	Imply()
-		: cond_1( 0 ), cond_2( 0 ) {}
+		: left( 0 ), right( 0 ) {}
 
 	Imply( const Imply * f, Domain & d )
-		: ParamCond( f ), cond_1( 0 ), cond_2( 0 ) {
-		if ( f->cond_1 ) cond_1 = f->cond_1->copy( d );
-		if ( f->cond_2 ) cond_2 = f->cond_2->copy( d );
+		: ParamCond( f ), left( 0 ), right( 0 ) {
+		if ( f->left ) left = f->left->copy( d );
+		if ( f->right ) right = f->right->copy( d );
 	}
 
 	~Imply() {
-		if ( cond_1 ) delete cond_1; // bc new creation
-		if ( cond_2 ) delete cond_2;
+		if ( left ) delete left; // bc new creation
+		if ( right ) delete right;
 	}
 
 	void print( std::ostream & s ) const {
 		s << "Imply" << params << ":\n";
-		if ( cond_1 ) cond_1->print( s );
-		if( cond_2 ) cond_2->print( s );
+		if ( left ) left->print( s );
+		if( right ) right->print( s );
 	}
 
 	void PDDLPrint( std::ostream & s, unsigned indent, const TokenStruct< std::string > & ts, const Domain & d ) const override;
@@ -41,8 +41,8 @@ public:
 	void parse( Stringreader & f, TokenStruct< std::string > & ts, Domain & d );
 
 	void addParams( int m, unsigned n ) {
-		cond_1->addParams( m, n );
-		cond_2->addParams( m, n );
+		left->addParams( m, n );
+		right->addParams( m, n );
 	}
 
 	Condition * copy( Domain & d ) {
