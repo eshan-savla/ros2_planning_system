@@ -341,8 +341,6 @@ std::tuple<bool, bool, double> evaluate(
           predicates, functions, false, use_state, tree.nodes[node_id].children[1],
           negate);
 
-        bool eval = std::get<1>(left) || std::get<1>(right);
-
         return std::make_tuple(
           std::get<0>(left) && std::get<0>(right), std::get<1>(
             left) || std::get<1>(right), 0);
