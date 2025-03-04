@@ -41,7 +41,11 @@ void Exists::PDDLPrint(
   s << ")";
 }
 
-plansys2_msgs::msg::Node::SharedPtr Exists::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace, const std::map<std::string, std::vector<std::string>> & instances_map ) const {
+plansys2_msgs::msg::Node::SharedPtr Exists::getTree(
+  plansys2_msgs::msg::Tree & tree, const Domain & d,
+  const std::vector<std::string> & replace,
+  const std::map<std::string, std::vector<std::string>> & instances_map) const
+{
   plansys2_msgs::msg::Node::SharedPtr node = std::make_shared<plansys2_msgs::msg::Node>();
   node->node_type = plansys2_msgs::msg::Node::EXISTS;
   node->node_id = tree.nodes.size();

@@ -31,8 +31,12 @@ void Oneof::PDDLPrint(
   s << ")";
 }
 
-plansys2_msgs::msg::Node::SharedPtr Oneof::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace, const std::map<std::string, std::vector<std::string>> & instances_map ) const {
-    throw UnsupportedConstruct("Oneof");
+plansys2_msgs::msg::Node::SharedPtr Oneof::getTree(
+  plansys2_msgs::msg::Tree & tree,
+  const Domain & d, const std::vector<std::string> & replace,
+  const std::map<std::string, std::vector<std::string>> & instances_map) const
+{
+  throw UnsupportedConstruct("Oneof");
 }
 
 void Oneof::parse(Stringreader & f, TokenStruct<std::string> & ts, Domain & d)

@@ -31,16 +31,20 @@ void And::PDDLPrint(
   s << ")";
 }
 
-plansys2_msgs::msg::Node::SharedPtr And::getTree( plansys2_msgs::msg::Tree & tree, const Domain & d, const std::vector<std::string> & replace, const std::map<std::string, std::vector<std::string>> & instances_map ) const {
-    plansys2_msgs::msg::Node::SharedPtr node = std::make_shared<plansys2_msgs::msg::Node>();
-    node->node_type = plansys2_msgs::msg::Node::AND;
-    node->node_id = tree.nodes.size();
-    tree.nodes.push_back(*node);
+plansys2_msgs::msg::Node::SharedPtr And::getTree(
+  plansys2_msgs::msg::Tree & tree, const Domain & d,
+  const std::vector<std::string> & replace,
+  const std::map<std::string, std::vector<std::string>> & instances_map) const
+{
+  plansys2_msgs::msg::Node::SharedPtr node = std::make_shared<plansys2_msgs::msg::Node>();
+  node->node_type = plansys2_msgs::msg::Node::AND;
+  node->node_id = tree.nodes.size();
+  tree.nodes.push_back(*node);
 
-    for ( unsigned i = 0; i < conds.size(); ++i) {
-        plansys2_msgs::msg::Node::SharedPtr child = conds[i]->getTree(tree, d, replace, instances_map);
-        tree.nodes[node->node_id].children.push_back(child->node_id);
-    }
+  for ( unsigned i = 0; i < conds.size(); ++i) {
+    plansys2_msgs::msg::Node::SharedPtr child = conds[i]->getTree(tree, d, replace, instances_map);
+    tree.nodes[node->node_id].children.push_back(child->node_id);
+  }
 
   return node;
 }
