@@ -268,7 +268,8 @@ ExecutorNode::get_ordered_subgoals(PlanRuntineInfo & runtime_info)
   auto goal = problem_client_->getGoal();
   auto local_predicates = problem_client_->getPredicates();
   auto local_functions = problem_client_->getFunctions();
-  auto instances = plansys2::convertVector<plansys2_msgs::msg::Param, plansys2::Instance>(problem_client_->getInstances());
+  auto instances = plansys2::convertVector<plansys2_msgs::msg::Param, plansys2::Instance>(
+    problem_client_->getInstances());
 
   std::vector<uint32_t> unordered_subgoals = parser::pddl::getSubtreeIds(goal);
 
