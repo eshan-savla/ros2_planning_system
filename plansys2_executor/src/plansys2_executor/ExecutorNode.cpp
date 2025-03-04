@@ -347,7 +347,8 @@ ExecutorNode::create_plan_runtime_info(PlanRuntineInfo & runtime_info)
 {
   runtime_info.action_map = std::make_shared<std::map<std::string, ActionExecutionInfo>>();
   auto action_timeout_actions = this->get_parameter("action_timeouts.actions").as_string_array();
-
+  auto instances = plansys2::convertVector<plansys2_msgs::msg::Param, plansys2::Instance>(
+    problem_client_->getInstances());
   (*runtime_info.action_map)[":0"] = ActionExecutionInfo();
   (*runtime_info.action_map)[":0"].action_executor = ActionExecutor::make_shared("(INIT)",
     shared_from_this());
@@ -372,7 +373,7 @@ ExecutorNode::create_plan_runtime_info(PlanRuntineInfo & runtime_info)
         action_name, get_action_params(plan_item.action));
     } else {
       (*runtime_info.action_map)[index].action_info = domain_client_->getDurativeAction(
-        action_name, get_action_params(plan_item.action));
+        action_name, get_action_params(plan_item.action), instances);
     }
 
     action_name = (*runtime_info.action_map)[index].action_info.get_action_name();
