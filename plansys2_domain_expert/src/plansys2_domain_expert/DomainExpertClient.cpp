@@ -333,7 +333,8 @@ DomainExpertClient::getActions()
 plansys2_msgs::msg::Action::SharedPtr
 DomainExpertClient::getAction(
   const std::string & action,
-  const std::vector<std::string> & params)
+  const std::vector<std::string> & params,
+  const std::vector<plansys2_msgs::msg::Param> & instances)
 {
   while (!get_action_details_client_->wait_for_service(std::chrono::seconds(1))) {
     if (!rclcpp::ok()) {
@@ -349,6 +350,7 @@ DomainExpertClient::getAction(
 
   request->action = action;
   request->parameters = params;
+  request->instances = instances;
 
   auto future_result = get_action_details_client_->async_send_request(request);
 

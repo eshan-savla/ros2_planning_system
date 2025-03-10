@@ -247,7 +247,7 @@ DomainExpertNode::get_domain_action_details_service_callback(
 
     RCLCPP_WARN(get_logger(), "Requesting service in non-active state");
   } else {
-    auto action = domain_expert_->getAction(request->action, request->parameters);
+    auto action = domain_expert_->getAction(request->action, request->parameters, request->instances);
 
     if (action) {
       response->action = *action;

@@ -115,7 +115,8 @@ public:
    */
   plansys2_msgs::msg::Action::SharedPtr getAction(
     const std::string & action,
-    const std::vector<std::string> & params = {});
+    const std::vector<std::string> & params = {},
+    const std::vector<plansys2_msgs::msg::Param> & instances = {});
 
   /// Get the temporal actions existing in the domain.
   /**

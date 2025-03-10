@@ -181,7 +181,8 @@ DomainExpert::getActions()
 }
 
 plansys2_msgs::msg::Action::SharedPtr
-DomainExpert::getAction(const std::string & action, const std::vector<std::string> & params)
+DomainExpert::getAction(const std::string & action, const std::vector<std::string> & params,
+  const std::vector<plansys2_msgs::msg::Param> & instances)
 {
   std::string action_search = action;
   std::transform(
@@ -191,7 +192,10 @@ DomainExpert::getAction(const std::string & action, const std::vector<std::strin
   auto ret = std::make_shared<plansys2_msgs::msg::Action>();
   bool found = false;
   unsigned i = 0;
-
+  std::map<std::string, std::vector<std::string>> instances_map;
+  for (const auto & instance : instances) {
+    instances_map[instance.type].push_back(instance.name);
+  }
   while (i < domain_->actions.size() && !found) {
     bool is_action = dynamic_cast<parser::pddl::TemporalAction *>(domain_->actions[i]) == nullptr;
     parser::pddl::Action * action_obj = dynamic_cast<parser::pddl::Action *>(domain_->actions[i]);
@@ -215,12 +219,12 @@ DomainExpert::getAction(const std::string & action, const std::vector<std::strin
 
       // Preconditions
       if (action_obj->pre) {
-        action_obj->pre->getTree(ret->preconditions, *domain_, params);
+        action_obj->pre->getTree(ret->preconditions, *domain_, params, instances_map);
       }
 
       // Effects
       if (action_obj->eff) {
-        action_obj->eff->getTree(ret->effects, *domain_, params);
+        action_obj->eff->getTree(ret->effects, *domain_, params, instances_map);
       }
     }
     i++;

@@ -1,5 +1,6 @@
 string action
 string[] parameters
+plansys2_msgs/Param[] instances
 ---
 plansys2_msgs/Action action
 bool success
