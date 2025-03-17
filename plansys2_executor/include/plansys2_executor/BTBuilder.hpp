@@ -131,6 +131,12 @@ protected:
     const std::vector<plansys2::Predicate> & predicates,
     const std::vector<plansys2::Function> & functions,
     const std::list<GraphNode::Ptr> & ret) const;
+  std::list<GraphNode::Ptr> get_final_nodes(
+    const std::list<GraphNode::Ptr> &nodes) const;
+  std::list<GraphNode::Ptr> get_final_nodes(
+    const GraphNode::Ptr &current_node,
+    const std::vector<plansys2_msgs::msg::Tree> &requirements,
+    const std::list<GraphNode::Ptr> &nodes) const;
 
   std::string get_flow_tree(
     GraphNode::Ptr node,

@@ -291,6 +291,81 @@ BTBuilder::prune_forward(GraphNode::Ptr current, std::list<GraphNode::Ptr> & use
   }
 }
 
+std::list<GraphNode::Ptr>
+BTBuilder::get_final_nodes(
+  const GraphNode::Ptr & current_node,
+  const std::vector<plansys2_msgs::msg::Tree> &requirements,
+  const std::list<GraphNode::Ptr> & nodes) const
+{
+  std::list<GraphNode::Ptr> ret;
+  for (const auto & node : nodes) {
+    if (node == current_node) {
+      ret.push_back(node);
+    } else {
+      ret.splice(ret.end(), get_final_nodes(node->out_arcs));
+    }
+  }
+  std::vector<plansys2_msgs::msg::Tree> all_reqs;
+  all_reqs.reserve(requirements[0].nodes.size());
+  for (const auto & tree : requirements) {
+    for (const auto & node : tree.nodes) {
+      if (node.node_type == plansys2_msgs::msg::Node::FORALL ||
+          node.node_type == plansys2_msgs::msg::Node::AND)
+        continue;
+      plansys2_msgs::msg::Tree node_tree;
+      node_tree.nodes.push_back(node);
+      if (node.node_type == plansys2_msgs::msg::Node::IMPLY) {
+        node_tree.nodes.resize(node.children.at(node.children.size() - 1) + 1);
+        for (const auto & child : node.children) {
+          node_tree.nodes[child] = tree.nodes[child];
+        }
+      }
+      all_reqs.push_back(node_tree);
+    }
+  }
+
+  auto it = ret.begin();
+  while (it != ret.end()){
+    bool has_effect = true;
+    std::vector<uint32_t> skip_ids;
+      for (const auto &tree : all_reqs) {
+        if(std::find(skip_ids.begin(), skip_ids.end(), tree.nodes[0].node_id) != skip_ids.end())
+          continue;
+        auto node = *it;
+        std::vector<plansys2::Predicate> predicates = node->predicates;
+        std::vector<plansys2::Function> functions = node->functions;
+        if (tree.nodes[0].node_type == plansys2_msgs::msg::Node::IMPLY)
+          skip_ids.insert(skip_ids.end(), tree.nodes[0].children.begin(), tree.nodes[0].children.end());
+        bool before = check(tree, predicates, functions);
+        apply(node->action.action->at_start_effects, predicates, functions);
+        apply(node->action.action->at_end_effects, predicates, functions);
+        bool after = check(tree, predicates, functions);
+        if (after && !before) {
+          ++it;
+          has_effect = true;
+          break;
+        }
+      }
+    if (!has_effect)
+      it = ret.erase(it);
+  }
+  return ret;
+}
+
+std::list<GraphNode::Ptr>
+BTBuilder::get_final_nodes(const std::list<GraphNode::Ptr> & nodes) const
+{
+  std::list<GraphNode::Ptr> ret;
+  for (const auto & node : nodes) {
+    if (node->out_arcs.empty()) {
+      ret.push_back(node);
+    } else {
+      ret.splice(ret.end(), get_final_nodes(node->out_arcs));
+    }
+  }
+  return ret;
+}
+
 void
 BTBuilder::get_state(
   const GraphNode::Ptr & node,
@@ -416,6 +491,35 @@ BTBuilder::get_graph(const plansys2_msgs::msg::Plan & current_plan)
     // Check any requirements that do not have satisfying nodes.
     // These should be satisfied by the initial state.
     remove_existing_requirements(requirements, predicates, functions);
+
+    // If requirements still left and no parent node found, check if 
+    // they are satisfied by multiple nodes
+    if (!requirements.empty() && new_node->in_arcs.empty()) {
+      std::list<GraphNode::Ptr> parents = get_final_nodes(new_node, requirements, graph->roots);
+      for (const auto parent : parents) {
+        prune_backwards(new_node, parent);
+
+        // Create the connections to the parent node
+        if (std::find(new_node->in_arcs.begin(), new_node->in_arcs.end(), parent) ==
+          new_node->in_arcs.end())
+        {
+          new_node->in_arcs.push_back(parent);
+        }
+        if (std::find(parent->out_arcs.begin(), parent->out_arcs.end(), new_node) ==
+          parent->out_arcs.end())
+        {
+          parent->out_arcs.push_back(new_node);
+        }
+      }
+      used_nodes.clear();
+      predicates = problem_client_->getPredicates();
+      functions = problem_client_->getFunctions();
+      get_state(new_node, used_nodes, predicates, functions);
+      new_node->predicates = predicates;
+      new_node->functions = functions;
+
+      remove_existing_requirements(requirements, predicates, functions);
+    } 
     for (const auto & req : requirements) {
       std::cerr << "[ERROR] requirement not met: [" <<
         parser::pddl::toString(req) << "]" << std::endl;
