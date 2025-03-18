@@ -293,19 +293,19 @@ BTBuilder::prune_forward(GraphNode::Ptr current, std::list<GraphNode::Ptr> & use
 
 std::list<GraphNode::Ptr>
 BTBuilder::get_final_nodes(
-  const GraphNode::Ptr & current_node,
-  const std::vector<plansys2_msgs::msg::Tree> &requirements,
-  const std::list<GraphNode::Ptr> & nodes) const
+  const std::list<GraphNode::Ptr> & nodes,
+  const std::vector<plansys2_msgs::msg::Tree> &requirements) const
 {
   std::list<GraphNode::Ptr> ret;
   for (const auto & node : nodes) {
-    if (node == current_node) {
+    if (node->out_arcs.empty()) {
       ret.push_back(node);
     } else {
       ret.splice(ret.end(), get_final_nodes(node->out_arcs));
     }
   }
   std::vector<plansys2_msgs::msg::Tree> all_reqs;
+  // Turn concurrent, each thread handles one of three requirements. Handle case with less.
   all_reqs.reserve(requirements[0].nodes.size());
   for (const auto & tree : requirements) {
     for (const auto & node : tree.nodes) {
@@ -331,14 +331,13 @@ BTBuilder::get_final_nodes(
       for (const auto &tree : all_reqs) {
         if(std::find(skip_ids.begin(), skip_ids.end(), tree.nodes[0].node_id) != skip_ids.end())
           continue;
-        auto node = *it;
-        std::vector<plansys2::Predicate> predicates = node->predicates;
-        std::vector<plansys2::Function> functions = node->functions;
+        std::vector<plansys2::Predicate> predicates = (*it)->predicates;
+        std::vector<plansys2::Function> functions = (*it)->functions;
         if (tree.nodes[0].node_type == plansys2_msgs::msg::Node::IMPLY)
           skip_ids.insert(skip_ids.end(), tree.nodes[0].children.begin(), tree.nodes[0].children.end());
         bool before = check(tree, predicates, functions);
-        apply(node->action.action->at_start_effects, predicates, functions);
-        apply(node->action.action->at_end_effects, predicates, functions);
+        apply((*it)->action.action->at_start_effects, predicates, functions);
+        apply((*it)->action.action->at_end_effects, predicates, functions);
         bool after = check(tree, predicates, functions);
         if (after && !before) {
           ++it;
@@ -495,7 +494,7 @@ BTBuilder::get_graph(const plansys2_msgs::msg::Plan & current_plan)
     // If requirements still left and no parent node found, check if 
     // they are satisfied by multiple nodes
     if (!requirements.empty() && new_node->in_arcs.empty()) {
-      std::list<GraphNode::Ptr> parents = get_final_nodes(new_node, requirements, graph->roots);
+      std::list<GraphNode::Ptr> parents = get_final_nodes(graph->roots, requirements);
       for (const auto parent : parents) {
         prune_backwards(new_node, parent);
 
