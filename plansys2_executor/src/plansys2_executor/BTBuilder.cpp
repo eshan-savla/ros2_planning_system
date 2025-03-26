@@ -291,22 +291,10 @@ BTBuilder::prune_forward(GraphNode::Ptr current, std::list<GraphNode::Ptr> & use
   }
 }
 
-std::list<GraphNode::Ptr>
-BTBuilder::get_final_nodes(
-  const std::list<GraphNode::Ptr> & nodes,
-  const std::vector<plansys2_msgs::msg::Tree> &requirements) const
+std::vector<plansys2_msgs::msg::Tree> BTBuilder::split_requirements(
+  const std::vector<plansys2_msgs::msg::Tree> & requirements) const
 {
-  std::list<GraphNode::Ptr> ret;
-  for (const auto & node : nodes) {
-    if (node->out_arcs.empty()) {
-      ret.push_back(node);
-    } else {
-      ret.splice(ret.end(), get_final_nodes(node->out_arcs));
-    }
-  }
-  std::vector<plansys2_msgs::msg::Tree> all_reqs;
-  // Turn concurrent, each thread handles one of three requirements. Handle case with less.
-  all_reqs.reserve(requirements[0].nodes.size());
+  std::vector<plansys2_msgs::msg::Tree> ret;
   for (const auto & tree : requirements) {
     for (const auto & node : tree.nodes) {
       if (node.node_type == plansys2_msgs::msg::Node::FORALL ||
@@ -320,48 +308,47 @@ BTBuilder::get_final_nodes(
           node_tree.nodes[child] = tree.nodes[child];
         }
       }
-      all_reqs.push_back(node_tree);
+      ret.push_back(node_tree);
     }
-  }
-
-  auto it = ret.begin();
-  while (it != ret.end()){
-    bool has_effect = true;
-    std::vector<uint32_t> skip_ids;
-      for (const auto &tree : all_reqs) {
-        if(std::find(skip_ids.begin(), skip_ids.end(), tree.nodes[0].node_id) != skip_ids.end())
-          continue;
-        std::vector<plansys2::Predicate> predicates = (*it)->predicates;
-        std::vector<plansys2::Function> functions = (*it)->functions;
-        if (tree.nodes[0].node_type == plansys2_msgs::msg::Node::IMPLY)
-          skip_ids.insert(skip_ids.end(), tree.nodes[0].children.begin(), tree.nodes[0].children.end());
-        bool before = check(tree, predicates, functions);
-        apply((*it)->action.action->at_start_effects, predicates, functions);
-        apply((*it)->action.action->at_end_effects, predicates, functions);
-        bool after = check(tree, predicates, functions);
-        if (after && !before) {
-          ++it;
-          has_effect = true;
-          break;
-        }
-      }
-    if (!has_effect)
-      it = ret.erase(it);
   }
   return ret;
 }
 
 std::list<GraphNode::Ptr>
-BTBuilder::get_final_nodes(const std::list<GraphNode::Ptr> & nodes) const
+BTBuilder::get_final_nodes(
+  const std::list<GraphNode::Ptr> & nodes,
+  const std::vector<plansys2_msgs::msg::Tree> &requirements) const
 {
-  std::list<GraphNode::Ptr> ret;
-  for (const auto & node : nodes) {
-    if (node->out_arcs.empty()) {
-      ret.push_back(node);
-    } else {
-      ret.splice(ret.end(), get_final_nodes(node->out_arcs));
+  std::list<GraphNode::Ptr> ret(nodes);
+  auto it = nodes.begin();
+  while (it != nodes.end()){
+    bool has_effect = false;
+    std::vector<uint32_t> skip_ids;
+    auto node = *it;
+    for (const auto &tree : requirements) {
+      if(std::find(skip_ids.begin(), skip_ids.end(), tree.nodes[0].node_id) != skip_ids.end())
+        continue;
+      std::vector<plansys2::Predicate> predicates = (*it)->predicates;
+      std::vector<plansys2::Function> functions = (*it)->functions;
+      if (tree.nodes[0].node_type == plansys2_msgs::msg::Node::IMPLY)
+        skip_ids.insert(skip_ids.end(), tree.nodes[0].children.begin(), tree.nodes[0].children.end());
+      bool before = check(tree, predicates, functions);
+      apply((*it)->action.action->at_start_effects, predicates, functions);
+      apply((*it)->action.action->at_end_effects, predicates, functions);
+      bool after = check(tree, predicates, functions);
+      if (after && !before) {
+        has_effect = true;
+        break;
+      }
     }
+    auto rec_ret = get_final_nodes((*it)->out_arcs, requirements);
+    if (!has_effect || !rec_ret.empty())
+      ret.remove(*it);
+    if (!rec_ret.empty())
+      ret.splice(ret.end(), rec_ret);
+    ++it;
   }
+
   return ret;
 }
 
@@ -494,7 +481,8 @@ BTBuilder::get_graph(const plansys2_msgs::msg::Plan & current_plan)
     // If requirements still left and no parent node found, check if 
     // they are satisfied by multiple nodes
     if (!requirements.empty() && new_node->in_arcs.empty()) {
-      std::list<GraphNode::Ptr> parents = get_final_nodes(graph->roots, requirements);
+      std::vector<plansys2_msgs::msg::Tree> split_reqs = split_requirements(requirements);
+      std::list<GraphNode::Ptr> parents = get_final_nodes(graph->roots, split_reqs);
       for (const auto parent : parents) {
         prune_backwards(new_node, parent);
 
