@@ -314,39 +314,84 @@ std::vector<plansys2_msgs::msg::Tree> BTBuilder::split_requirements(
   return ret;
 }
 
+std::list<GraphNode::Ptr> BTBuilder::get_final_nodes(
+  const std::list<GraphNode::Ptr> & nodes) const
+{
+  std::list<GraphNode::Ptr> ret;
+  for (const auto & node : nodes) {
+    if (node->out_arcs.empty()) {
+      ret.push_back(node);
+    } else {
+      ret.splice(ret.end(), get_final_nodes(node->out_arcs));
+    }
+  }
+  return ret;
+}
+
 std::list<GraphNode::Ptr>
-BTBuilder::get_final_nodes(
+BTBuilder::get_parent_nodes(
   const std::list<GraphNode::Ptr> & nodes,
-  const std::vector<plansys2_msgs::msg::Tree> &requirements) const
+  const std::vector<plansys2_msgs::msg::Tree> &requirements, const bool get_final) const
 {
   std::list<GraphNode::Ptr> ret(nodes);
-  auto it = nodes.begin();
-  while (it != nodes.end()){
+  auto node_it = nodes.begin();
+  while (node_it != nodes.end()){
     bool has_effect = false;
     std::vector<uint32_t> skip_ids;
-    auto node = *it;
+    auto node = *node_it;
     for (const auto &tree : requirements) {
       if(std::find(skip_ids.begin(), skip_ids.end(), tree.nodes[0].node_id) != skip_ids.end())
         continue;
-      std::vector<plansys2::Predicate> predicates = (*it)->predicates;
-      std::vector<plansys2::Function> functions = (*it)->functions;
+      std::vector<plansys2::Predicate> predicates = (*node_it)->predicates;
+      std::vector<plansys2::Function> functions = (*node_it)->functions;
       if (tree.nodes[0].node_type == plansys2_msgs::msg::Node::IMPLY)
         skip_ids.insert(skip_ids.end(), tree.nodes[0].children.begin(), tree.nodes[0].children.end());
       bool before = check(tree, predicates, functions);
-      apply((*it)->action.action->at_start_effects, predicates, functions);
-      apply((*it)->action.action->at_end_effects, predicates, functions);
+      apply((*node_it)->action.action->at_start_effects, predicates, functions);
+      apply((*node_it)->action.action->at_end_effects, predicates, functions);
       bool after = check(tree, predicates, functions);
       if (after && !before) {
         has_effect = true;
         break;
       }
     }
-    auto rec_ret = get_final_nodes((*it)->out_arcs, requirements);
+    auto rec_ret = get_parent_nodes((*node_it)->out_arcs, requirements, false);
     if (!has_effect || !rec_ret.empty())
-      ret.remove(*it);
+      ret.remove(*node_it);
     if (!rec_ret.empty())
       ret.splice(ret.end(), rec_ret);
-    ++it;
+    ++node_it;
+  }
+  if (get_final) {
+    auto finals = get_final_nodes(nodes);
+    auto it = ret.begin();
+    while (it != ret.end()) {
+      bool has_effect = false;
+      std::vector<uint32_t> skip_ids;
+      auto node = *it;
+      for (const auto &tree : requirements) {
+        if(std::find(skip_ids.begin(), skip_ids.end(), tree.nodes[0].node_id) != skip_ids.end())
+          continue;
+        std::vector<plansys2::Predicate> predicates = (*it)->predicates;
+        std::vector<plansys2::Function> functions = (*it)->functions;
+        if (tree.nodes[0].node_type == plansys2_msgs::msg::Node::IMPLY)
+          skip_ids.insert(skip_ids.end(), tree.nodes[0].children.begin(), tree.nodes[0].children.end());
+        bool before = check(tree, predicates, functions);
+        apply((*it)->action.action->at_start_effects, predicates, functions);
+        apply((*it)->action.action->at_end_effects, predicates, functions);
+        bool after = check(tree, predicates, functions);
+        if (after && !before) {
+          has_effect = true;
+          break;
+        }
+      }
+      if (!has_effect) {
+        it = finals.erase(it);
+      } else {
+        ++it;
+      }
+    }
+    ret.splice(ret.end(), finals);
   }
 
   return ret;
@@ -446,6 +491,36 @@ BTBuilder::get_graph(const plansys2_msgs::msg::Plan & current_plan)
       }
     }
 
+    // If requirements still left and no parent node found, check if 
+    // they are satisfied by multiple nodes
+    if (!requirements.empty() && new_node->in_arcs.empty()) {
+      std::vector<plansys2_msgs::msg::Tree> split_reqs = split_requirements(requirements);
+      std::list<GraphNode::Ptr> parents = get_parent_nodes(graph->roots, split_reqs);
+      for (const auto parent : parents) {
+        prune_backwards(new_node, parent);
+
+        // Create the connections to the parent node
+        if (std::find(new_node->in_arcs.begin(), new_node->in_arcs.end(), parent) ==
+          new_node->in_arcs.end())
+        {
+          new_node->in_arcs.push_back(parent);
+        }
+        if (std::find(parent->out_arcs.begin(), parent->out_arcs.end(), new_node) ==
+          parent->out_arcs.end())
+        {
+          parent->out_arcs.push_back(new_node);
+        }
+      }
+      // std::list<GraphNode::Ptr> used_nodes;
+      // predicates = problem_client_->getPredicates();
+      // functions = problem_client_->getFunctions();
+      // get_state(new_node, used_nodes, predicates, functions);
+      // new_node->predicates = predicates;
+      // new_node->functions = functions;
+
+      // remove_existing_requirements(requirements, predicates, functions);
+    } 
+
     // Look for contradicting parallel actions
     // A1 and A2 cannot run in parallel if the effects of A1 contradict the requirements of A2
     auto contradictions = get_node_contradict(graph, new_node);
@@ -478,35 +553,6 @@ BTBuilder::get_graph(const plansys2_msgs::msg::Plan & current_plan)
     // These should be satisfied by the initial state.
     remove_existing_requirements(requirements, predicates, functions);
 
-    // If requirements still left and no parent node found, check if 
-    // they are satisfied by multiple nodes
-    if (!requirements.empty() && new_node->in_arcs.empty()) {
-      std::vector<plansys2_msgs::msg::Tree> split_reqs = split_requirements(requirements);
-      std::list<GraphNode::Ptr> parents = get_final_nodes(graph->roots, split_reqs);
-      for (const auto parent : parents) {
-        prune_backwards(new_node, parent);
-
-        // Create the connections to the parent node
-        if (std::find(new_node->in_arcs.begin(), new_node->in_arcs.end(), parent) ==
-          new_node->in_arcs.end())
-        {
-          new_node->in_arcs.push_back(parent);
-        }
-        if (std::find(parent->out_arcs.begin(), parent->out_arcs.end(), new_node) ==
-          parent->out_arcs.end())
-        {
-          parent->out_arcs.push_back(new_node);
-        }
-      }
-      used_nodes.clear();
-      predicates = problem_client_->getPredicates();
-      functions = problem_client_->getFunctions();
-      get_state(new_node, used_nodes, predicates, functions);
-      new_node->predicates = predicates;
-      new_node->functions = functions;
-
-      remove_existing_requirements(requirements, predicates, functions);
-    } 
     for (const auto & req : requirements) {
       std::cerr << "[ERROR] requirement not met: [" <<
         parser::pddl::toString(req) << "]" << std::endl;
