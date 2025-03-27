@@ -758,9 +758,13 @@ plansys2_msgs::msg::Node fromStringPredicate(const std::string & predicate)
   }
 
   tokens[0].erase(0, 1);
+  if (tokens[0].back() == ')') 
+    tokens[0].pop_back();
+
   ret.name = tokens[0];
 
-  tokens.back().pop_back();
+  if (tokens.size() > 1 && tokens.back().back() == ')') 
+    tokens.back().pop_back();
 
   for (size_t i = 1; i < tokens.size(); i++) {
     plansys2_msgs::msg::Param param;
