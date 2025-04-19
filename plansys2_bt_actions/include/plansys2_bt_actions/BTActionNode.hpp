@@ -231,7 +231,7 @@ public:
   }
 
 protected:
-  void cancel_goal()
+  virtual void cancel_goal()
   {
     auto future_cancel = action_client_->async_cancel_goal(goal_handle_);
     if (rclcpp::spin_until_future_complete(
