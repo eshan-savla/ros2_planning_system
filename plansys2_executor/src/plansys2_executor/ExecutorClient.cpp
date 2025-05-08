@@ -70,6 +70,7 @@ ExecutorClient::start_plan_execution(const plansys2_msgs::msg::Plan & plan)
 
     if (success) {
       executing_plan_ = true;
+      feedback_ = ExecutePlan::Feedback();
       return true;
     }
   } else {
