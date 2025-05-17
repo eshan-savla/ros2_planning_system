@@ -406,7 +406,7 @@ BTBuilder::get_contradict_finals(
   std::list<GraphNode::Ptr> finals = get_final_nodes(nodes);
   std::list<GraphNode::Ptr> ret;
   for (const auto & node : finals) {
-    if(is_parallelizable(current->action, predicates, functions, {node}))
+    if(!is_parallelizable(current->action, predicates, functions, {node}))
       ret.push_back(node);
   }
   return ret;
@@ -511,7 +511,7 @@ BTBuilder::get_graph(const plansys2_msgs::msg::Plan & current_plan)
     if (!requirements.empty() && new_node->in_arcs.empty()) {
       std::vector<plansys2_msgs::msg::Tree> split_reqs = split_requirements(requirements);
       std::list<GraphNode::Ptr> parents = get_parent_nodes(graph->roots, split_reqs, false);
-      parents.splice(parents.end(), get_final_nodes(parents));
+      parents.splice(parents.end(), get_contradict_finals(new_node, graph->roots, predicates, functions));
       for (const auto parent : parents) {
         prune_backwards(new_node, parent);
 
