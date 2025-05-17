@@ -397,6 +397,21 @@ BTBuilder::get_parent_nodes(
   return ret;
 }
 
+std::list<GraphNode::Ptr> 
+BTBuilder::get_contradict_finals(
+  const GraphNode::Ptr &current, const std::list<GraphNode::Ptr> &nodes,
+  const std::vector<plansys2::Predicate> &predicates,
+  const std::vector<plansys2::Function> &functions) const
+{
+  std::list<GraphNode::Ptr> finals = get_final_nodes(nodes);
+  std::list<GraphNode::Ptr> ret;
+  for (const auto & node : finals) {
+    if(is_parallelizable(current->action, predicates, functions, {node}))
+      ret.push_back(node);
+  }
+  return ret;
+}
+
 void
 BTBuilder::get_state(
   const GraphNode::Ptr & node,
@@ -495,7 +510,8 @@ BTBuilder::get_graph(const plansys2_msgs::msg::Plan & current_plan)
     // they are satisfied by multiple nodes
     if (!requirements.empty() && new_node->in_arcs.empty()) {
       std::vector<plansys2_msgs::msg::Tree> split_reqs = split_requirements(requirements);
-      std::list<GraphNode::Ptr> parents = get_parent_nodes(graph->roots, split_reqs);
+      std::list<GraphNode::Ptr> parents = get_parent_nodes(graph->roots, split_reqs, false);
+      parents.splice(parents.end(), get_final_nodes(parents));
       for (const auto parent : parents) {
         prune_backwards(new_node, parent);
 

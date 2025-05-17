@@ -137,6 +137,11 @@ protected:
   std::list<GraphNode::Ptr> get_final_nodes(const std::list<GraphNode::Ptr> &nodes) const;
   std::vector<plansys2_msgs::msg::Tree> split_requirements(const std::vector<plansys2_msgs::msg::Tree>
                                                                &requirements) const;
+  std::list<GraphNode::Ptr> get_contradict_finals(
+    const GraphNode::Ptr & current,
+    const std::list<GraphNode::Ptr> & nodes,
+    const std::vector<plansys2::Predicate> & predicates,
+    const std::vector<plansys2::Function> & functions) const;
 
   std::string get_flow_tree(
     GraphNode::Ptr node,
