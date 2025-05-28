@@ -11,7 +11,6 @@ find_package(plansys2_domain_expert REQUIRED)
 find_package(plansys2_problem_expert REQUIRED)
 find_package(plansys2_popf_plan_solver REQUIRED)
 find_package(pluginlib REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 
 set(PLANNER_SOURCES
@@ -34,7 +33,6 @@ target_link_libraries(${PROJECT_NAME}
   pluginlib::pluginlib
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
-  ${std_msgs_TARGETS}
   PRIVATE
   plansys2_popf_plan_solver::plansys2_popf_plan_solver
 )
@@ -102,7 +100,6 @@ ament_export_dependencies(
   plansys2_problem_expert
   plansys2_popf_plan_solver
   pluginlib
-  std_msgs
   lifecycle_msgs
 )
 

@@ -23,13 +23,9 @@
 #include "plansys2_problem_expert/ProblemExpertInterface.hpp"
 #include "plansys2_core/Types.hpp"
 
-#include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/empty.hpp"
 
-#include "plansys2_msgs/msg/node.hpp"
-#include "plansys2_msgs/msg/param.hpp"
 #include "plansys2_msgs/msg/problem.hpp"
-#include "plansys2_msgs/msg/tree.hpp"
 #include "plansys2_msgs/srv/add_problem.hpp"
 #include "plansys2_msgs/srv/add_problem_goal.hpp"
 #include "plansys2_msgs/srv/affect_node.hpp"

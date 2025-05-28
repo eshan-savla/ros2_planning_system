@@ -19,10 +19,7 @@
 
 #include "plansys2_problem_expert/ProblemExpert.hpp"
 
-#include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/empty.hpp"
-#include "lifecycle_msgs/msg/state.hpp"
-#include "lifecycle_msgs/msg/transition.hpp"
 #include "plansys2_msgs/msg/knowledge.hpp"
 #include "plansys2_msgs/msg/problem.hpp"
 #include "plansys2_msgs/srv/affect_node.hpp"

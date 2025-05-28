@@ -4,7 +4,6 @@ project(plansys2_pddl_parser)
 
 find_package(ament_cmake REQUIRED)
 find_package(plansys2_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
 
 set(PDDL-PARSER-SOURCES
   src/plansys2_pddl_parser/GroundFunc.cpp
@@ -37,7 +36,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
   ${plansys2_msgs_TARGETS}
-  ${std_msgs_TARGETS}
 )
 
 add_executable(parser src/parser.cpp)
@@ -83,7 +81,6 @@ ament_export_libraries(${PROJECT_NAME})
 ament_export_targets(${PROJECT_NAME})
 ament_export_dependencies(
   plansys2_msgs
-  std_msgs
 )
 
 ament_package()

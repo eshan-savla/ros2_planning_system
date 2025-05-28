@@ -35,6 +35,7 @@ ament_add_gtest(bt_action_test bt_action_test.cpp)
 target_link_libraries(bt_action_test
   ${PROJECT_NAME}
   ${geometry_msgs_TARGETS}
+  ${lifecycle_msgs_TARGETS}
   ${test_msgs_TARGETS}
 )
 

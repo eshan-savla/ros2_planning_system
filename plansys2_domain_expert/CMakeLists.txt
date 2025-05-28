@@ -10,7 +10,6 @@ find_package(plansys2_msgs REQUIRED)
 find_package(plansys2_core REQUIRED)
 find_package(plansys2_popf_plan_solver REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(lifecycle_msgs REQUIRED)
 
 set(DOMAIN_EXPERT_SOURCES
   src/plansys2_domain_expert/DomainExpert.cpp
@@ -26,7 +25,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
-  ${lifecycle_msgs_TARGETS}
   plansys2_core::plansys2_core
   ${plansys2_msgs_TARGETS}
   plansys2_pddl_parser::plansys2_pddl_parser
@@ -79,6 +77,7 @@ if(BUILD_TESTING)
 
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_index_cpp REQUIRED)
+  find_package(lifecycle_msgs REQUIRED)
   add_subdirectory(test)
 endif()
 
