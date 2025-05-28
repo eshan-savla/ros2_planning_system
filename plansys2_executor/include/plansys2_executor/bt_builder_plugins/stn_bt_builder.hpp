@@ -171,8 +171,4 @@ protected:
 }  // namespace plansys2
 
 
-#include "pluginlib/class_list_macros.hpp"
-
-PLUGINLIB_EXPORT_CLASS(plansys2::STNBTBuilder, plansys2::BTBuilder)
-
 #endif  // PLANSYS2_EXECUTOR__BT_BUILDER_PLUGINS__STN_BT_BUILDER_HPP_

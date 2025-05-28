@@ -35,7 +35,6 @@
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 
 #include "pluginlib/class_loader.hpp"
-#include "pluginlib/class_list_macros.hpp"
 
 namespace plansys2
 {

@@ -103,13 +103,13 @@ target_link_libraries(bt_builder_plugins
   plansys2_core::plansys2_core
   plansys2_domain_expert::plansys2_domain_expert
   plansys2_problem_expert::plansys2_problem_expert
-  pluginlib::pluginlib
   rclcpp::rclcpp
   rclcpp_action::rclcpp_action
   ${std_msgs_TARGETS}
   PRIVATE
   behaviortree_cpp::behaviortree_cpp
   plansys2_pddl_parser::plansys2_pddl_parser
+  pluginlib::pluginlib
 )
 
 pluginlib_export_plugin_description_file(plansys2_executor plugins.xml)
