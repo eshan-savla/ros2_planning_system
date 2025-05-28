@@ -10,30 +10,6 @@ find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(plansys2_executor REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
-find_package(action_msgs REQUIRED)
-find_package(lifecycle_msgs REQUIRED)
-
-set(dependencies
-    rclcpp::rclcpp
-    rclcpp_action::rclcpp_action
-    rclcpp_lifecycle::rclcpp_lifecycle
-    plansys2_executor::plansys2_executor
-    behaviortree_cpp::behaviortree_cpp
-    ${action_msgs_TARGETS}
-    ${lifecycle_msgs_TARGETS}
-)
-
-set(package_dependencies
-    rclcpp
-    rclcpp_action
-    rclcpp_lifecycle
-    plansys2_executor
-    behaviortree_cpp
-    action_msgs
-    lifecycle_msgs
-)
-
-include_directories(include)
 
 set(BT_ACTIONS_SOURCES
   src/plansys2_bt_actions/BTAction.cpp
@@ -44,12 +20,26 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
-target_link_libraries(${PROJECT_NAME} PUBLIC ${dependencies})
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+  behaviortree_cpp::behaviortree_cpp
+  plansys2_executor::plansys2_executor
+  rclcpp::rclcpp
+  rclcpp_action::rclcpp_action
+  rclcpp_lifecycle::rclcpp_lifecycle
+)
 
 add_executable(bt_action_node
   src/bt_action_node.cpp
 )
-target_link_libraries(bt_action_node PUBLIC ${PROJECT_NAME} ${dependencies})
+target_include_directories(bt_action_node PRIVATE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+target_link_libraries(bt_action_node
+  PRIVATE
+  ${PROJECT_NAME}
+  rclcpp::rclcpp
+)
 
 install(
   DIRECTORY include/
@@ -80,14 +70,18 @@ if(BUILD_TESTING)
   find_package(test_msgs REQUIRED)
   find_package(geometry_msgs REQUIRED)
 
-  set(dependencies ${dependencies} ${plansys2_msgs_TARGETS} ${test_msgs_TARGETS} ${geometry_msgs_TARGETS})
-
   add_subdirectory(test)
 endif()
 
 ament_export_include_directories("include/${PROJECT_NAME}")
 ament_export_libraries(${PROJECT_NAME})
 ament_export_targets(${PROJECT_NAME})
-ament_export_dependencies(${package_dependencies})
+ament_export_dependencies(
+  rclcpp
+  rclcpp_action
+  rclcpp_lifecycle
+  plansys2_executor
+  behaviortree_cpp
+)
 
 ament_package()

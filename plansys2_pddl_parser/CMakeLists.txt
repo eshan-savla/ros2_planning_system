@@ -3,23 +3,8 @@ cmake_minimum_required(VERSION 3.5)
 project(plansys2_pddl_parser)
 
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(plansys2_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
-
-set(dependencies
-    rclcpp::rclcpp
-    ${plansys2_msgs_TARGETS}
-    ${std_msgs_TARGETS}
-)
-
-set(package_dependencies
-  rclcpp
-  plansys2_msgs
-  std_msgs
-)
-
-include_directories(include)
 
 set(PDDL-PARSER-SOURCES
   src/plansys2_pddl_parser/GroundFunc.cpp
@@ -49,10 +34,21 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
-target_link_libraries(${PROJECT_NAME} PUBLIC ${dependencies})
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+  ${plansys2_msgs_TARGETS}
+  ${std_msgs_TARGETS}
+)
 
 add_executable(parser src/parser.cpp)
-target_link_libraries(parser PUBLIC ${PROJECT_NAME})
+target_include_directories(parser PRIVATE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+)
+target_link_libraries(parser
+  PRIVATE
+  ${PROJECT_NAME}
+)
 
 install(
   DIRECTORY include/
@@ -78,13 +74,16 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_index_cpp REQUIRED)
-  set(dependencies ${dependencies} ament_index_cpp::ament_index_cpp)
+  find_package(rclcpp REQUIRED)
   add_subdirectory(test)
 endif()
 
 ament_export_include_directories("include/${PROJECT_NAME}")
 ament_export_libraries(${PROJECT_NAME})
 ament_export_targets(${PROJECT_NAME})
-ament_export_dependencies(${package_dependencies})
+ament_export_dependencies(
+  plansys2_msgs
+  std_msgs
+)
 
 ament_package()

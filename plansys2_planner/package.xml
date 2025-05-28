@@ -3,17 +3,16 @@
 <package format="3">
   <name>plansys2_planner</name>
   <version>2.0.11</version>
-  
+
   <description>This package contains the PDDL-based Planner module for the ROS2 Planning System</description>
 
   <maintainer email="fmrico@gmail.com">Francisco Martin Rico</maintainer>
- 
+
   <license>Apache License, Version 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>rclcpp_action</depend>
   <depend>rclcpp_lifecycle</depend>
   <depend>ament_index_cpp</depend>
   <depend>plansys2_core</depend>
