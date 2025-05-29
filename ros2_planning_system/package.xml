@@ -26,7 +26,6 @@
   <exec_depend>plansys2_problem_expert</exec_depend>
   <exec_depend>plansys2_support_py</exec_depend>
   <exec_depend>plansys2_terminal</exec_depend>
-  <exec_depend>plansys2_tests</exec_depend>
   <exec_depend>plansys2_tools</exec_depend>
 
   <export>
