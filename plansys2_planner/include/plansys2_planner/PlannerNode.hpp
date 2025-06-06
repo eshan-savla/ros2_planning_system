@@ -25,7 +25,6 @@
 
 #include "plansys2_core/PlanSolverBase.hpp"
 
-#include "std_msgs/msg/empty.hpp"
 #include "lifecycle_msgs/msg/state.hpp"
 #include "lifecycle_msgs/msg/transition.hpp"
 #include "plansys2_msgs/srv/get_plan.hpp"
@@ -36,7 +35,6 @@
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 
 #include "pluginlib/class_loader.hpp"
-#include "pluginlib/class_list_macros.hpp"
 
 namespace plansys2
 {

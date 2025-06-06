@@ -24,8 +24,6 @@
 #include <utility>
 #include <tuple>
 
-#include "std_msgs/msg/empty.hpp"
-
 #include "plansys2_domain_expert/DomainExpertClient.hpp"
 #include "plansys2_problem_expert/ProblemExpertClient.hpp"
 #include "plansys2_executor/ActionExecutor.hpp"
@@ -173,9 +171,5 @@ protected:
 
 }  // namespace plansys2
 
-
-#include "pluginlib/class_list_macros.hpp"
-
-PLUGINLIB_EXPORT_CLASS(plansys2::SimpleBTBuilder, plansys2::BTBuilder)
 
 #endif  // PLANSYS2_EXECUTOR__BT_BUILDER_PLUGINS__SIMPLE_BT_BUILDER_HPP_
