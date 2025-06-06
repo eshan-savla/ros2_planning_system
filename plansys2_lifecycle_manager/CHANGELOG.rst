@@ -2,8 +2,8 @@
 Changelog for package plansys2_lifecycle_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
--------------------
+3.0.0 (2025-06-06)
+------------------
 * Modify export target. Rename metapackage
 * Revamp CMake and clean unused headers
 * Update install

@@ -2,8 +2,8 @@
 Changelog for package plansys2_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
--------------------
+3.0.0 (2025-06-06)
+------------------
 * Revamp CMake and clean unused headers
 * Update CMakeLists to manage dependencies more efficiently in various packages.
 * Update CI adding BT.CPP as source dependecy
