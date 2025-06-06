@@ -2,8 +2,8 @@
 Changelog for package plansys2_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.12 (2025-06-06)
+-------------------
 * Modify export target. Rename metapackage
 * Revamp CMake and clean unused headers
 * Remove unused dependencies

@@ -2,8 +2,8 @@
 Changelog for package plansys2_problem_expert
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.12 (2025-06-06)
+-------------------
 * Remove unnecessary depends
 * Revamp CMake and clean unused headers
 * Update install

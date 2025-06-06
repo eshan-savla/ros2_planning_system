@@ -2,8 +2,8 @@
 Changelog for package plansys2_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.12 (2025-06-06)
+-------------------
 * Multiple plans and replanning stability
 * Add getProblemWithTimestamp to Problem Expert
 * Service and logic for get multiple plans
