@@ -2,7 +2,7 @@
 Changelog for package plansys2_bringup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
+2.0.13 (2025-06-06)
 -------------------
 * Revamp CMake and clean unused headers
 * Update CMakeLists to manage dependencies more efficiently in various packages.

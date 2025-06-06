@@ -2,7 +2,7 @@
 Changelog for package plansys2_executor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
+2.0.13 (2025-06-06)
 -------------------
 * Modify export target. Rename metapackage
 * Revamp CMake and clean unused headers

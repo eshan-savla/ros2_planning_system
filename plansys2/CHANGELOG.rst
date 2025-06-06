@@ -2,7 +2,7 @@
 Changelog for package plansys2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
+2.0.13 (2025-06-06)
 -------------------
 * Merge pull request `#366 <https://github.com/PlanSys2/ros2_planning_system/issues/366>`_ from fmrico/add_exports
   Modify export target. Rename metapackage
