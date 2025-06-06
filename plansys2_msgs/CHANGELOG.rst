@@ -4,11 +4,23 @@ Changelog for package plansys2_msgs
 
 Forthcoming
 -----------
+* Multiple plans and replanning stability
+* Add getProblemWithTimestamp to Problem Expert
+* Service and logic for get multiple plans
+* Replanning
+* Executor basic replanning done
+* Add support for ParamExpression and ConstExpression
+* Support for existential preconditions
 * add uint8 EXISTS = 10 to Node.msg
+* Add support for derived predicates
 * support for ParamExpression and ConstExpression
 * add Derived.msg and GetDomainDerivedPredicateDetails.srv
+* Fix CI after BT-CPP v4
+* Remove cmake warning
 * Add option to use planner node to validate domain in domain expert
+* add Derived.msg and GetDomainDerivedPredicateDetails.srv
 * Contributors: Francisco Martín Rico, Gustavo, Josh Zapf, Marco Roveri, Robodrome, Sebastian Castro
+
 
 2.0.9 (2022-07-10)
 ------------------

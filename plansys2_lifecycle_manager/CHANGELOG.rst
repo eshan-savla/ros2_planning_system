@@ -4,9 +4,18 @@ Changelog for package plansys2_lifecycle_manager
 
 Forthcoming
 -----------
+* Modify export target. Rename metapackage
+* Revamp CMake and clean unused headers
+* Update install
+* Update CI adding BT.CPP as source dependecy
+* Fix deprecation of ament_target_dependencies
+* Change to EventsExecutor
+* [lifecycle_manager] Activate planner first
 * lifecycle_manager: activate planner first
-* Remove cmake warning
-* Contributors: Francisco Martín Rico, Gustavo, Josh Zapf, Marco Roveri, Splinter1984
+* Fix CI after BT-CPP v4
+* lifecycle_manager: activate planner first
+* Contributors: Alberto Tudela, Francisco Martín Rico, Gustavo, Josh Zapf, Marco Roveri, Splinter1984
+
 
 2.0.9 (2022-07-10)
 ------------------
