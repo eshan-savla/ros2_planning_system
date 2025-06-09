@@ -60,7 +60,7 @@ public:
 };
 
 /**
- * @class Predicate
+ * @class plansys2::Predicate
  * @brief Represents a predicate in the planning domain.
  *
  * Inherits from plansys2_msgs::msg::Node and provides constructors for easy creation
@@ -91,7 +91,7 @@ public:
 };
 
 /**
- * @class Function
+ * @class plansys2::Function
  * @brief Represents a function in the planning domain.
  *
  * Inherits from plansys2_msgs::msg::Node and provides constructors for easy creation
@@ -122,7 +122,7 @@ public:
 };
 
 /**
- * @class Goal
+ * @class plansys2::Goal
  * @brief Represents a goal in the planning domain.
  *
  * Inherits from plansys2_msgs::msg::Tree and provides constructors for easy creation
