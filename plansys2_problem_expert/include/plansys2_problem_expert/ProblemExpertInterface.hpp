@@ -15,8 +15,9 @@
 #ifndef PLANSYS2_PROBLEM_EXPERT__PROBLEMEXPERTINTERFACE_HPP_
 #define PLANSYS2_PROBLEM_EXPERT__PROBLEMEXPERTINTERFACE_HPP_
 
-#include <string>
 #include <vector>
+#include <optional>
+#include <string>
 
 #include "plansys2_core/Types.hpp"
 
