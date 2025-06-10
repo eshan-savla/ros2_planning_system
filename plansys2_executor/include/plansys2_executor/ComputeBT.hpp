@@ -18,6 +18,8 @@
 #include <memory>
 #include <string>
 
+#include "behaviortree_cpp/loggers/groot2_publisher.h"
+
 #include "plansys2_domain_expert/DomainExpertClient.hpp"
 #include "plansys2_domain_expert/DomainExpertNode.hpp"
 #include "plansys2_executor/BTBuilder.hpp"
@@ -82,6 +84,21 @@ private:
   void savePlan(const plansys2_msgs::msg::Plan & plan, const std::string & filename) const;
   void saveBT(const std::string & bt_xml, const std::string & filename) const;
   void saveDotGraph(const std::string & dotgraph, const std::string & filename) const;
+
+  /**
+   * @brief Add Groot2 monitor to publish BT status changes
+   * @param tree BT to monitor
+   * @param server_port Groot2 Server port, first of the pair (server_port, publisher_port)
+   */
+  void addGrootMonitoring(BT::Tree * tree, uint16_t server_port);
+
+  /**
+   * @brief Reset Groot2 monitor
+   */
+  void resetGrootMonitor();
+
+  // Groot2 monitor
+  std::unique_ptr<BT::Groot2Publisher> groot_monitor_;
 };
 
 }  // namespace plansys2

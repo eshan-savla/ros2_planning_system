@@ -24,6 +24,7 @@
 #include "behaviortree_cpp/xml_parsing.h"
 #include "behaviortree_cpp/loggers/bt_file_logger_v2.h"
 #include "behaviortree_cpp/loggers/bt_minitrace_logger.h"
+#include "behaviortree_cpp/loggers/groot2_publisher.h"
 
 #include "plansys2_executor/ActionExecutorClient.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -34,9 +35,7 @@ namespace plansys2
 class BTAction : public plansys2::ActionExecutorClient
 {
 public:
-  explicit BTAction(
-    const std::string & action,
-    const std::chrono::nanoseconds & rate);
+  explicit BTAction(const std::string & action, const std::chrono::nanoseconds & rate);
 
   const std::string & getActionName() const {return action_;}
   const std::string & getBTFile() const {return bt_xml_file_;}
@@ -56,6 +55,18 @@ protected:
 
   void do_work();
 
+  /**
+   * @brief Add Groot2 monitor to publish BT status changes
+   * @param tree BT to monitor
+   * @param server_port Groot2 Server port, first of the pair (server_port, publisher_port)
+   */
+  void addGrootMonitoring(BT::Tree * tree, uint16_t server_port);
+
+  /**
+   * @brief Reset Groot2 monitor
+   */
+  void resetGrootMonitor();
+
   BT::BehaviorTreeFactory factory_;
 
 private:
@@ -67,6 +78,8 @@ private:
   bool finished_;
   std::unique_ptr<BT::FileLogger2> bt_file_logger_;
   std::unique_ptr<BT::MinitraceLogger> bt_minitrace_logger_;
+  // Groot2 monitor
+  std::unique_ptr<BT::Groot2Publisher> groot_monitor_;
 };
 
 }  // namespace plansys2

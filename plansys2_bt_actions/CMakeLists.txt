@@ -11,6 +11,7 @@ find_package(rclcpp_lifecycle REQUIRED)
 find_package(plansys2_executor REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 set(BT_ACTIONS_SOURCES
   src/plansys2_bt_actions/BTAction.cpp
@@ -28,6 +29,8 @@ target_link_libraries(${PROJECT_NAME}
   rclcpp::rclcpp
   rclcpp_action::rclcpp_action
   rclcpp_lifecycle::rclcpp_lifecycle
+  PRIVATE
+  ${std_msgs_TARGETS}
 )
 
 add_executable(bt_action_node
