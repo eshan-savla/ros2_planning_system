@@ -95,7 +95,7 @@ TEST(test_4, test_4)
   }
   problem_client->addPredicate(plansys2::Predicate("(not_door_open)"));
 
-  problem_client->setGoal(plansys2::Goal("(and (door_open)"));
+  problem_client->setGoal(plansys2::Goal("(and (door_open))"));
 
   auto domain = domain_client->getDomain();
   auto problem = problem_client->getProblem();
